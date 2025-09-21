@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Biblioteca Virtual</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 20px;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo i {
+            font-size: 32px;
+            color: #667eea;
+        }
+
+        .logo h1 {
+            color: #2d3748;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #667eea;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: #e53e3e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #c53030;
+            transform: translateY(-1px);
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card .icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            font-size: 20px;
+            margin-bottom: 16px;
+        }
+
+        .stat-card.books .icon {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .stat-card.users .icon {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+        }
+
+        .stat-card.downloads .icon {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: white;
+        }
+
+        .stat-card h3 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 4px;
+        }
+
+        .stat-card p {
+            color: #718096;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 32px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .section h2 {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 24px;
+        }
+
+        .section h2 i {
+            color: #667eea;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #fff;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .file-upload {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            border: 2px dashed #cbd5e0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: #f7fafc;
+        }
+
+        .file-upload:hover {
+            border-color: #667eea;
+            background: #edf2f7;
+        }
+
+        .file-upload.dragover {
+            border-color: #667eea;
+            background: #e6fffa;
+        }
+
+        .file-upload input {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .file-upload .icon {
+            font-size: 48px;
+            color: #a0aec0;
+            margin-bottom: 16px;
+        }
+
+        .file-upload .text {
+            text-align: center;
+            color: #4a5568;
+        }
+
+        .file-upload .text strong {
+            color: #667eea;
+        }
+
+        .file-preview {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #e6fffa;
+            border: 1px solid #81e6d9;
+            border-radius: 8px;
+            margin-top: 12px;
+        }
+
+        .file-preview.show {
+            display: flex;
+        }
+
+        .file-preview i {
+            color: #38a169;
+            font-size: 20px;
+        }
+
+        .file-preview .file-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .file-preview .file-name {
+            font-weight: 600;
+            color: #2d3748;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .file-preview .file-size {
+            font-size: 12px;
+            color: #718096;
+        }
+
+        .remove-file {
+            background: #e53e3e;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+
+        .books-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 24px;
+        }
+
+        .books-table th,
+        .books-table td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .books-table th {
+            background: #f7fafc;
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 14px;
+        }
+
+        .books-table tr:hover {
+            background: #f7fafc;
+        }
+
+        .book-cover {
+            width: 40px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .book-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .btn-danger {
+            background: #e53e3e;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c53030;
+        }
+
+        .alert {
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert-success {
+            background: #c6f6d5;
+            color: #276749;
+            border: 1px solid #9ae6b4;
+        }
+
+        .alert-error {
+            background: #fed7d7;
+            color: #9b2c2c;
+            border: 1px solid #feb2b2;
+        }
+
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .books-table {
+                font-size: 14px;
+            }
+
+            .books-table th,
+            .books-table td {
+                padding: 12px 8px;
+            }
+
+            .book-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-book-open"></i>
+                <h1>Admin - Biblioteca Virtual</h1>
+            </div>
+            <div class="user-menu">
+                <div class="user-info">
+                    <i class="fas fa-user-shield"></i>
+                    <span id="adminName">Administrador</span>
+                </div>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <!-- Estadísticas -->
+        <div class="stats-grid">
+            <div class="stat-card books">
+                <div class="icon">
+                    <i class="fas fa-book"></i>
+                </div>
+                <h3 id="totalBooks">0</h3>
+                <p>Total de Libros</p>
+            </div>
+            <div class="stat-card users">
+                <div class="icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3 id="totalUsers">1</h3>
+                <p>Usuarios Registrados</p>
+            </div>
+            <div class="stat-card downloads">
+                <div class="icon">
+                    <i class="fas fa-download"></i>
+                </div>
+                <h3 id="totalDownloads">0</h3>
+                <p>Descargas Totales</p>
+            </div>
+        </div>
+
+        <!-- Alerta -->
+        <div id="alert" class="alert"></div>
+
+        <!-- Sección Agregar Libro -->
+        <section class="section">
+            <h2>
+                <i class="fas fa-plus-circle"></i>
+                Agregar Nuevo Libro
+            </h2>
+
+            <form id="bookForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="title">Título *</label>
+                        <input type="text" id="title" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="author">Autor *</label>
+                        <input type="text" id="author" name="author" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="category">Categoría</label>
+                        <select id="category" name="category">
+                            <option value="ficcion">Ficción</option>
+                            <option value="no-ficcion">No Ficción</option>
+                            <option value="ciencia">Ciencia</option>
+                            <option value="tecnologia">Tecnología</option>
+                            <option value="historia">Historia</option>
+                            <option value="biografia">Biografía</option>
+                            <option value="educacion">Educación</option>
+                            <option value="arte">Arte</option>
+                            <option value="filosofia">Filosofía</option>
+                            <option value="otros">Otros</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="year">Año de Publicación</label>
+                        <input type="number" id="year" name="year" min="1000" max="2025">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="description">Descripción</label>
+                        <textarea id="description" name="description" placeholder="Describe brevemente el contenido del libro..."></textarea>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Portada del Libro</label>
+                        <div class="file-upload" id="coverUpload">
+                            <input type="file" id="coverFile" accept="image/*">
+                            <i class="fas fa-image icon"></i>
+                            <div class="text">
+                                <strong>Haz clic para subir</strong> o arrastra la imagen aquí
+                                <br>
+                                <small>PNG, JPG hasta 5MB</small>
+                            </div>
+                        </div>
+                        <div class="file-preview" id="coverPreview">
+                            <i class="fas fa-image"></i>
+                            <div class="file-info">
+                                <div class="file-name" id="coverFileName"></div>
+                                <div class="file-size" id="coverFileSize"></div>
+                            </div>
+                            <button type="button" class="remove-file" onclick="removeFile('cover')">×</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Archivo PDF del Libro *</label>
+                        <div class="file-upload" id="pdfUpload">
+                            <input type="file" id="pdfFile" accept=".pdf" required>
+                            <i class="fas fa-file-pdf icon"></i>
+                            <div class="text">
+                                <strong>Haz clic para subir</strong> o arrastra el PDF aquí
+                                <br>
+                                <small>Solo archivos PDF hasta 50MB</small>
+                            </div>
+                        </div>
+                        <div class="file-preview" id="pdfPreview">
+                            <i class="fas fa-file-pdf"></i>
+                            <div class="file-info">
+                                <div class="file-name" id="pdfFileName"></div>
+                                <div class="file-size" id="pdfFileSize"></div>
+                            </div>
+                            <button type="button" class="remove-file" onclick="removeFile('pdf')">×</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 16px; justify-content: flex-end; margin-top: 24px;">
+                    <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                        <i class="fas fa-times"></i>
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <span class="btn-text">
+                            <i class="fas fa-save"></i>
+                            Guardar Libro
+                        </span>
+                        <div class="spinner" style="display: none;"></div>
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Sección Lista de Libros -->
+        <section class="section">
+            <h2>
+                <i class="fas fa-list"></i>
+                Libros Publicados
+            </h2>
+
+            <div style="overflow-x: auto;">
+                <table class="books-table">
+                    <thead>
+                        <tr>
+                            <th>Portada</th>
+                            <th>Título</th>
+                            <th>Autor</th>
+                            <th>Categoría</th>
+                            <th>Año</th>
+                            <th>Descargas</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="booksTableBody">
+                        <!-- Los libros se cargarán dinámicamente aquí -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Simulación de base de datos de libros
+        let books = [];
+        let bookIdCounter = 1;
+
+        // Referencias a elementos del DOM
+        const bookForm = document.getElementById('bookForm');
+        const alert = document.getElementById('alert');
+        const booksTableBody = document.getElementById('booksTableBody');
+
+        // Inicializar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            loadBooks();
+            setupFileUploads();
+            updateStats();
+        });
+
+        // Verificar autenticación
+        function checkAuth() {
+            const currentUser = localStorage.getItem('currentUser');
+            if (!currentUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const user = JSON.parse(currentUser);
+            if (user.role !== 'admin') {
+                window.location.href = 'reader.html';
+                return;
+            }
+
+            document.getElementById('adminName').textContent = user.name;
+        }
+
+        // Configurar subida de archivos
+        function setupFileUploads() {
+            setupFileUpload('cover', ['image/jpeg', 'image/png', 'image/gif'], 5 * 1024 * 1024);
+            setupFileUpload('pdf', ['application/pdf'], 50 * 1024 * 1024);
+        }
+
+        function setupFileUpload(type, acceptedTypes, maxSize) {
+            const uploadArea = document.getElementById(`${type}Upload`);
+            const fileInput = document.getElementById(`${type}File`);
+            const preview = document.getElementById(`${type}Preview`);
+
+            // Drag and drop
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFileSelect(files[0], type, acceptedTypes, maxSize);
+                }
+            });
+
+            // File input change
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleFileSelect(e.target.files[0], type, acceptedTypes, maxSize);
+                }
+            });
+        }
+
+        function handleFileSelect(file, type, acceptedTypes, maxSize) {
+            if (!acceptedTypes.includes(file.type)) {
+                showAlert('Tipo de archivo no válido.', 'error');
+                return;
+            }
+
+            if (file.size > maxSize) {
+                showAlert(`El archivo es demasiado grande. Máximo ${maxSize / (1024 * 1024)}MB.`, 'error');
+                return;
+            }
+
+            // Mostrar preview
+            document.getElementById(`${type}FileName`).textContent = file.name;
+            document.getElementById(`${type}FileSize`).textContent = formatFileSize(file.size);
+            document.getElementById(`${type}Preview`).classList.add('show');
+        }
+
+        function removeFile(type) {
+            document.getElementById(`${type}File`).value = '';
+            document.getElementById(`${type}Preview`).classList.remove('show');
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Manejo del formulario
+        bookForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            setFormLoading(true);
+
+            const formData = new FormData(bookForm);
+            const coverFile = document.getElementById('coverFile').files[0];
+            const pdfFile = document.getElementById('pdfFile').files[0];
+
+            if (!pdfFile) {
+                showAlert('El archivo PDF es obligatorio.', 'error');
+                setFormLoading(false);
+                return;
+            }
+
+            // Simular subida y procesamiento
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            // Crear objeto libro
+            const book = {
+                id: bookIdCounter++,
+                title: formData.get('title'),
+                author: formData.get('author'),
+                category: formData.get('category'),
+                year: formData.get('year') || new Date().getFullYear(),
+                description: formData.get('description') || '',
+                coverUrl: coverFile ? URL.createObjectURL(coverFile) : 'https://via.placeholder.com/300x450/667eea/white?text=No+Cover',
+                pdfUrl: URL.createObjectURL(pdfFile),
+                downloads: 0,
+                createdAt: new Date().toISOString()
+            };
+
+            books.push(book);
+            localStorage.setItem('books', JSON.stringify(books));
+
+            showAlert('¡Libro agregado exitosamente!', 'success');
+            resetForm();
+            loadBooks();
+            updateStats();
+            setFormLoading(false);
+        });
+
+        function setFormLoading(loading) {
+            const btn = bookForm.querySelector('button[type="submit"]');
+            const btnText = btn.querySelector('.btn-text');
+            const spinner = btn.querySelector('.spinner');
+
+            if (loading) {
+                btn.classList.add('loading');
+                btnText.style.display = 'none';
+                spinner.style.display = 'block';
+            } else {
+                btn.classList.remove('loading');
+                btnText.style.display = 'flex';
+                spinner.style.display = 'none';
+            }
+        }
+
+        function resetForm() {
+            bookForm.reset();
+            removeFile('cover');
+            removeFile('pdf');
+        }
+
+        // Cargar libros
+        function loadBooks() {
+            const savedBooks = localStorage.getItem('books');
+            if (savedBooks) {
+                books = JSON.parse(savedBooks);
+                bookIdCounter = Math.max(...books.map(b => b.id), 0) + 1;
+            }
+            renderBooksTable();
+        }
+
+        function renderBooksTable() {
+            if (books.length === 0) {
+                booksTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 40px; color: #718096;">
+                            <i class="fas fa-book-open" style="font-size: 48px; margin-bottom: 16px; display: block;"></i>
+                            No hay libros publicados aún
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            booksTableBody.innerHTML = books.map(book => `
+                <tr>
+                    <td>
+                        <img src="${book.coverUrl}" alt="${book.title}" class="book-cover">
+                    </td>
+                    <td>
+                        <strong>${book.title}</strong>
+                    </td>
+                    <td>${book.author}</td>
+                    <td>
+                        <span style="background: #e2e8f0; padding: 4px 8px; border-radius: 4px; font-size: 12px; text-transform: capitalize;">
+                            ${book.category.replace('-', ' ')}
+                        </span>
+                    </td>
+                    <td>${book.year}</td>
+                    <td>
+                        <span style="display: flex; align-items: center; gap: 4px;">
+                            <i class="fas fa-download" style="color: #667eea;"></i>
+                            ${book.downloads}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="book-actions">
+                            <button class="btn btn-sm btn-secondary" onclick="viewBook(${book.id})">
+                                <i class="fas fa-eye"></i>
+                                Ver
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteBook(${book.id})">
+                                <i class="fas fa-trash"></i>
+                                Eliminar
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function viewBook(bookId) {
+            const book = books.find(b => b.id === bookId);
+            if (book) {
+                // Abrir el PDF en una nueva ventana
+                window.open(book.pdfUrl, '_blank');
+            }
+        }
+
+        function deleteBook(bookId) {
+            if (confirm('¿Estás seguro de que quieres eliminar este libro?')) {
+                books = books.filter(b => b.id !== bookId);
+                localStorage.setItem('books', JSON.stringify(books));
+                showAlert('Libro eliminado exitosamente.', 'success');
+                loadBooks();
+                updateStats();
+            }
+        }
+
+        // Actualizar estadísticas
+        function updateStats() {
+            document.getElementById('totalBooks').textContent = books.length;
+            document.getElementById('totalDownloads').textContent = books.reduce((sum, book) => sum + book.downloads, 0);
+            
+            // Simular usuarios registrados
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            document.getElementById('totalUsers').textContent = users.length + 1; // +1 para el admin
+        }
+
+        // Mostrar alertas
+        function showAlert(message, type) {
+            alert.className = `alert alert-${type} show`;
+            alert.textContent = message;
+            
+            setTimeout(() => {
+                alert.classList.remove('show');
+            }, 4000);
+        }
+
+        // Cerrar sesión
+        function logout() {
+            if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+                localStorage.removeItem('currentUser');
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+</body>
+</html>
